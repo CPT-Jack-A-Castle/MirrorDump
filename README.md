@@ -264,7 +264,7 @@ The current POC application will take the uncompressed in memory dump and save i
 
 The tool can be run without any arguments which will use sane defaults for the output filename and the DLL name used for generating the LSA plugin.  There is no default limit to the size of the in memory dump, so use with caution if you have not specified the limit (in bytes).  
 
-```shell
+```
 .\MirrorDump.exe --help
   -f, --filename=VALUE       Output path for generated zip file
   -d, --dllName=VALUE        Output LSA DLL name
