@@ -270,6 +270,13 @@ The tool can be run without any arguments which will use sane defaults for the o
   -d, --dllName=VALUE        Output LSA DLL name
   -l, --limit=VALUE          The maximum amount of memory the minidump is
                                allowed to consume
+      --host=VALUE           IP or a hostname of the attacker's machine (if
+                               specified the dump will be sent to attacker over
+                               TCP)
+      --port=VALUE           Port number for the minidump to be sent to (must
+                               be used with --host option)
+  -p, --parse                Parse the minidump online without touching the
+                               disk (uses https://github.com/cube0x0/MiniDump)
   -h, --help                 Display this help
 ```
 

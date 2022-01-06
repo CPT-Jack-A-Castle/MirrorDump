@@ -1,0 +1,3 @@
+[submodule ".\\MiniDump\\Minidump"]
+	path = .\\MiniDump\\Minidump
+	url = https://github.com/snovvcrash/MiniDump

@@ -4,6 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <LangVersion>9.0</LangVersion>
     <ProjectGuid>{58338E42-6010-493C-B8C8-2FD2CFC30FFB}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>MirrorDump</RootNamespace>
@@ -103,6 +104,46 @@
     <Compile Include="MinHook.NET\Trampoline.cs" />
     <Compile Include="MinHook.NET\Utils.cs" />
     <Compile Include="MiniDump\MiniDumpToMem.cs" />
+    <Compile Include="MiniDump\Minidump\Crypto\BCrypt.cs" />
+    <Compile Include="MiniDump\Minidump\Crypto\Crypto.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\Cloudap_.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\Credman.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\Dpapi_.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\KerberosSessions.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\Kerberos_.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\LiveSsp_.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\LogonSessions.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\lsadecryptor_lsa_decryptor.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\lsadecryptor_lsa_decryptor_nt5.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\lsadecryptor_lsa_decryptor_nt6.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\Msv1_.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\Rdp_.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\Ssp_.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\Tspkg_.cs" />
+    <Compile Include="MiniDump\Minidump\Decryptor\WDigest_.cs" />
+    <Compile Include="MiniDump\Minidump\Helpers.cs" />
+    <Compile Include="MiniDump\Minidump\Program.cs" />
+    <Compile Include="MiniDump\Minidump\Streams\Directory.cs" />
+    <Compile Include="MiniDump\Minidump\Streams\Header.cs" />
+    <Compile Include="MiniDump\Minidump\Streams\Memory64ListStream.cs" />
+    <Compile Include="MiniDump\Minidump\Streams\Memory86ListStream.cs" />
+    <Compile Include="MiniDump\Minidump\Streams\MinidumpMemory.cs" />
+    <Compile Include="MiniDump\Minidump\Streams\ModuleList.cs" />
+    <Compile Include="MiniDump\Minidump\Streams\Parse.cs" />
+    <Compile Include="MiniDump\Minidump\Streams\SystemInfo.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\cloudap_templates.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\credman_templates.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\dpapi_templates.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\kerberos_templates.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\livessp_templates.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\lsa_templates.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\lsa_template_nt5.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\lsa_template_nt6.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\msv_templates.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\rdp_templates.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\ssp_templates.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\tspkg_templates.cs" />
+    <Compile Include="MiniDump\Minidump\Templates\wdigest_templates.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="ProcessUtility.cs" />
     <Compile Include="Program.cs" />
@@ -113,6 +154,7 @@
     <None Include="app.config" />
     <EmbeddedResource Include="Lsa\LsaProviderDuper.boo" />
     <None Include="MinHook.NET\SharpDisasm\SharpDisasm.csproj" />
+    <None Include="MiniDump\Minidump\App.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="MinHook.NET\SharpDisasm\Udis86\OpTable.tt">
@@ -133,5 +175,6 @@
       <Version>4.3.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

