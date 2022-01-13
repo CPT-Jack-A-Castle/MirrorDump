@@ -92,7 +92,7 @@ namespace MirrorDump {
             string fileName = "lsass.zip";
             string dllName = "LsaProviderDuper.dll";
             string host = "";
-            int port = 0;
+            int port = -1;
             bool parse = false;
             bool showHelp = false;
 
