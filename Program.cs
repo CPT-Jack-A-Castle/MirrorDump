@@ -45,12 +45,8 @@ namespace MirrorDump {
                 {
                     var lsassDump = archive.CreateEntry($"{Guid.NewGuid()}.bin");
                     using (var entryStream = lsassDump.Open())
-                    {
                         using (var dumpCompressStream = new MemoryStream(dc.Data))
-                        {
                             dumpCompressStream.CopyTo(entryStream);
-                        }
-                    }
                 }
 
                 byte[] compressedBytes = outStream.ToArray();
